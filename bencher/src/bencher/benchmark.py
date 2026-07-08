@@ -43,6 +43,15 @@ except ImportError as e:
     sys.exit(1)
 
 
+def nice_list(items: list[str]) -> str:
+    if not items:
+        return ""
+    if len(items) == 1:
+        return items[0]
+    elif len(items) == 2:
+        return items[0] + " vs " + items[1]
+    return ", ".join(items[:-1]) + " and " + items[-1]
+
 def get_page_count(pdf_path: Path) -> int | None:
     """Returns the page count of a PDF, or None if it can't be read."""
     if not pdf_path.is_file():
@@ -137,7 +146,7 @@ def plot_comparison(
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
     title = (
-        f"py-antas vs go-antas — {len(samples)} PDF sample"
+        f"{nice_list(commands)} — {len(samples)} PDF sample"
         f"{'s' if len(samples) != 1 else ''} — {timestamp}"
     )
 

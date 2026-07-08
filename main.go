@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"antas.com/antas/console"
-	"antas.com/antas/pdf"
-	"antas.com/antas/renderer"
+	"github.com/gitmobkab/antas/console"
+	"github.com/gitmobkab/antas/pdf"
+	"github.com/gitmobkab/antas/renderer"
 )
 
 func main() {	

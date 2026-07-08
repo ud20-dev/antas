@@ -4,7 +4,6 @@ go 1.25.5
 
 require (
 	charm.land/lipgloss/v2 v2.0.5
-	github.com/google/uuid v1.6.0
 	github.com/klippa-app/go-pdfium v1.19.4
 )
 
@@ -19,6 +18,7 @@ require (
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/go-hclog v1.6.3 // indirect
 	github.com/hashicorp/go-plugin v1.8.0 // indirect
 	github.com/hashicorp/yamux v0.1.2 // indirect

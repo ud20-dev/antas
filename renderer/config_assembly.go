@@ -4,7 +4,6 @@ package renderer
 
 import (
     "time"
-	"log"
 
 	"github.com/klippa-app/go-pdfium"
 	"github.com/klippa-app/go-pdfium/webassembly"
@@ -32,6 +31,7 @@ func Init() (error) {
 	if err != nil {
 		return err
 	}
+	return nil
 }
 
 func Close() error {

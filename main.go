@@ -30,7 +30,9 @@ func Run(Args []string) error {
 		return fmt.Errorf("File does not exist: %s", inputFile)
 	}
 	
-	renderer.Init()
+	if err := renderer.Init(); err != nil{
+		return err
+	}
 	defer renderer.Close()
 	outputDir, err := pdf.GetPDFOutputPath(Args[0])
 	if err != nil {

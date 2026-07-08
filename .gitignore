@@ -1,0 +1,12 @@
+# vs code config
+.vscode/
+
+# Generated files and folders
+## binaries
+antas*
+
+## benchmarking results
+benchmark_results/
+
+## benchmark
+benchmark_comparison.png

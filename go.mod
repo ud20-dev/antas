@@ -1,4 +1,4 @@
-module antas.com/antas
+module github.com/ud20-dev/antas
 
 go 1.25.5
 

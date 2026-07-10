@@ -8,11 +8,11 @@ the pdf pages are always saved in the path:
 
 - `temp_dir` refers to the the temporary directory on your machine
 - `input_file_hash` is the hash of the given file computed via the sha256 algorithm. so multiple files are grouped.
--  `when` is meant for uniqueness of runs (so threading, go routines, doesn't create races conditions). 
-    `when` is computed with two value, Now() represented via [the Unix representation number](https://en.wikipedia.org/wiki/Unix_time) and [the current PID (Process Id of antas)](https://en.wikipedia.org/wiki/Process_identifier)
+-  `when` is meant for uniqueness of runs (so threading, goroutines, doesn't create race conditions).
+    `when` is computed from three values: Now() represented via [the Unix representation number](https://en.wikipedia.org/wiki/Unix_time), [the current PID (Process Id of antas)](https://en.wikipedia.org/wiki/Process_identifier), and a process-wide atomic counter that guarantees no two goroutines ever produce the same path even within the same second.
 
     TL.DR
-    `{when} = {Now().UnixTime}-{pid}`
+    `{when} = {Now().UnixTime}-{pid}-{seq}`
 
 - `id` is simply the number of the page
 

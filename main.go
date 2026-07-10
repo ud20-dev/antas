@@ -40,13 +40,20 @@ func Dispatch(ctx RunContext) (int, error) {
 		cmd.PrintVersion()
 		return ExitSuccess, nil
 	} 
+	if len(ctx.Args) != 1 {
+		return ExitBadCLIUsage, 
+		fmt.Errorf(
+			"expected only one argument, got %d\nusage: <path/to/file.pdf>",
+			len(ctx.Args),
+		)
+	}
 
 	reporter, err := console.GetReporter(ctx.Format)
 	if err != nil {
 		return ExitBadCLIUsage, err
 	}
 
-	err = cmd.CanonicalRun(ctx.Args, reporter)
+	err = cmd.CanonicalRun(ctx.Args[0], reporter)
 	if err != nil {
 		reporter.Error(err)
 		return ExitGenericFailure, err

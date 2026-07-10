@@ -11,11 +11,7 @@ import (
 )
 
 
-func CanonicalRun(Args []string, reporter console.Reporter) error {
-	if len(Args) != 1 {
-		return fmt.Errorf("usage: antas <path/to/file.pdf>")
-	}
-	inputFile := Args[0]
+func CanonicalRun(inputFile string, reporter console.Reporter) error {
 	if _, err := os.Stat(inputFile); os.IsNotExist(err) {
 		return fmt.Errorf("file does not exist: %s", inputFile)
 	}
@@ -24,7 +20,7 @@ func CanonicalRun(Args []string, reporter console.Reporter) error {
 		return err
 	}
 	defer func() { _ = renderer.Close() }()
-	outputDir, err := pdf.GetPDFOutputPath(Args[0])
+	outputDir, err := pdf.GetPDFOutputPath(inputFile)
 	if err != nil {
 		return fmt.Errorf("error getting PDF output path: %v", err)
 	}

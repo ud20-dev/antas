@@ -26,17 +26,17 @@ func CanonicalRun(Args []string, reporter console.Reporter) error {
 	defer func() { _ = renderer.Close() }()
 	outputDir, err := pdf.GetPDFOutputPath(Args[0])
 	if err != nil {
-		return fmt.Errorf("Error getting PDF output path: %v", err)
+		return fmt.Errorf("error getting PDF output path: %v", err)
 	}
 	pageCount, err := renderer.GetPageCount(inputFile)
 	if err != nil {
-		return fmt.Errorf("Error getting page count: %v", err)
+		return fmt.Errorf("error getting page count: %v", err)
 	}
 	for i := range pageCount {
 		outputFile := fmt.Sprintf("%s/page_%d.png", outputDir, i+1)
 		err = renderer.RenderPage(inputFile, i, outputFile)
 		if err != nil {
-			return fmt.Errorf("Error rendering page %d: %v", i+1, err)
+			return fmt.Errorf("error rendering page %d: %v", i+1, err)
 		}
 		reporter.PageRendered(i+1, outputFile)
 	}

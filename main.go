@@ -48,6 +48,7 @@ func Dispatch(ctx RunContext) (int, error) {
 
 	err = cmd.CanonicalRun(ctx.Args, reporter)
 	if err != nil {
+		reporter.Error(err)
 		return ExitGenericFailure, err
 	}
 	return 0, nil

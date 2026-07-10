@@ -8,5 +8,5 @@ import (
 
 func GetReportersUsage() string{
 	keys := slices.Sorted(maps.Keys(REPORTERS))
-	return strings.Join(keys, "|")
+	return strings.Join(keys, " | ")
 }

@@ -7,59 +7,48 @@ import (
 	pflag "github.com/spf13/pflag"
 
 	"github.com/ud20-dev/antas/console"
-	"github.com/ud20-dev/antas/pdf"
-	"github.com/ud20-dev/antas/renderer"
+	"github.com/ud20-dev/antas/cmd"
 )
 
 
 func main() {
-	format := pflag.StringP("format", "f", "human", console.GetReportersUsage())
+	var ctx RunContext
+	pflag.StringVarP(&ctx.Format,"format", "f", "human", 
+		fmt.Sprintf("the format to use when printing/logging one of %s", console.GetReportersUsage()),
+	)
+	pflag.BoolVarP(&ctx.Help,"help", "h", false, "Show help information")
+	pflag.BoolVarP(&ctx.Version,"version", "v", false, "Show version information")
 	pflag.Parse()
-	reporter, err := console.GetReporter(*format)
-	if err != nil {
+	ctx.Args = pflag.Args()
+
+	return_code, err := Dispatch(ctx)
+	if return_code == ExitBadCLIUsage {
 		console.PrintWithStyle(
 			console.ErrorStyle,
 			"%v",
 			err,
 		)
-		os.Exit(2)
 	}
-	args := pflag.Args()
-	if err := Run(args, reporter); err != nil {
-		reporter.Error(err)
-		os.Exit(1)
-	}
+	os.Exit(return_code)
 }
 
-func Run(Args []string, reporter console.Reporter) error {
-	if len(Args) != 1 {
-		return fmt.Errorf("Usage: antas <path/to/file.pdf>, %v", Args)
-	}
-	inputFile := Args[0]
-	if _, err := os.Stat(inputFile); os.IsNotExist(err) {
-		return fmt.Errorf("File does not exist: %s", inputFile)
-	}
-	
-	if err := renderer.Init(); err != nil{
-		return err
-	}
-	defer renderer.Close()
-	outputDir, err := pdf.GetPDFOutputPath(Args[0])
+func Dispatch(ctx RunContext) (int, error) {
+	if ctx.Help{
+		cmd.PrintHelp()
+		return ExitSuccess, nil
+	} else if ctx.Version {
+		cmd.PrintVersion()
+		return ExitSuccess, nil
+	} 
+
+	reporter, err := console.GetReporter(ctx.Format)
 	if err != nil {
-		return fmt.Errorf("Error getting PDF output path: %v", err)
+		return ExitBadCLIUsage, err
 	}
-	pageCount, err := renderer.GetPageCount(inputFile)
+
+	err = cmd.CanonicalRun(ctx.Args, reporter)
 	if err != nil {
-		return fmt.Errorf("Error getting page count: %v", err)
+		return ExitGenericFailure, err
 	}
-	for i := range pageCount {
-		outputFile := fmt.Sprintf("%s/page_%d.png", outputDir, i+1)
-		err = renderer.RenderPage(inputFile, i, outputFile)
-		if err != nil {
-			return fmt.Errorf("Error rendering page %d: %v", i+1, err)
-		}
-		reporter.PageRendered(i+1, outputFile)
-	}
-	reporter.Done(outputDir, pageCount)
-	return nil
+	return 0, nil
 }

@@ -4,26 +4,36 @@ import (
 	"fmt"
 	"os"
 
+	pflag "github.com/spf13/pflag"
+
 	"github.com/ud20-dev/antas/console"
 	"github.com/ud20-dev/antas/pdf"
 	"github.com/ud20-dev/antas/renderer"
 )
 
-func main() {	
-	args := os.Args[1:] // Skip the program name
-	if err := Run(args); err != nil {
+
+func main() {
+	format := pflag.StringP("format", "f", "human", console.GetReportersUsage())
+	pflag.Parse()
+	reporter, err := console.GetReporter(*format)
+	if err != nil {
 		console.PrintWithStyle(
 			console.ErrorStyle,
-			"%s",
+			"%v",
 			err,
 		)
+		os.Exit(2)
+	}
+	args := pflag.Args()
+	if err := Run(args, reporter); err != nil {
+		reporter.Error(err)
 		os.Exit(1)
 	}
 }
 
-func Run(Args []string) error {
+func Run(Args []string, reporter console.Reporter) error {
 	if len(Args) != 1 {
-		return fmt.Errorf("Usage: antas <path/to/file.pdf>")
+		return fmt.Errorf("Usage: antas <path/to/file.pdf>, %v", Args)
 	}
 	inputFile := Args[0]
 	if _, err := os.Stat(inputFile); os.IsNotExist(err) {
@@ -48,8 +58,8 @@ func Run(Args []string) error {
 		if err != nil {
 			return fmt.Errorf("Error rendering page %d: %v", i+1, err)
 		}
-		console.PrintWithStyle(console.InfoStyle, "Rendered page %d to %s", i+1, outputFile)
+		reporter.PageRendered(i+1, outputFile)
 	}
-	console.PrintWithStyle(console.SuccessStyle, "All pages rendered to %s", outputDir)
+	reporter.Done(outputDir, pageCount)
 	return nil
 }

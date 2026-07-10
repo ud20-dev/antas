@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 #
 # Builds antas-natif / antas-natif-turbo against the native (CGO) PDFium
 # build, selected via the `natif` build tag (vs. the webassembly variant).
@@ -49,19 +48,8 @@ COPY --from=pdfium /pdfium/lib /opt/pdfium/lib
 COPY --from=pdfium /pdfium/include /opt/pdfium/include
 
 RUN mkdir -p /opt/pdfium/lib/pkgconfig \
-	&& cat > /opt/pdfium/lib/pkgconfig/pdfium.pc <<-'EOF'
-	prefix=/opt/pdfium
-	libdir=${prefix}/lib
-	includedir=${prefix}/include
-
-	Name: PDFium
-	Description: PDFium
-	Version: 7934
-	Requires:
-
-	Libs: -L${libdir} -lpdfium
-	Cflags: -I${includedir}
-	EOF
+	&& printf 'prefix=/opt/pdfium\nlibdir=${prefix}/lib\nincludedir=${prefix}/include\n\nName: PDFium\nDescription: PDFium\nVersion: 7934\nRequires:\n\nLibs: -L${libdir} -lpdfium\nCflags: -I${includedir}\n' \
+		> /opt/pdfium/lib/pkgconfig/pdfium.pc
 
 ENV CGO_ENABLED=1
 ENV PKG_CONFIG_PATH=/opt/pdfium/lib/pkgconfig

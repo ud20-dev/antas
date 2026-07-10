@@ -122,3 +122,48 @@ in most cases you'll probably want to use antas-natif, if it runs in a dedicated
 the docker file will provide a simple way to built a docker image 
 
 you can then sandbox antas-natif with control of the system.
+
+## Docker
+
+Pre-built images of `antas-natif` are published to the GitHub Container Registry on every release:
+
+```bash
+docker pull ghcr.io/ud20-dev/antas:latest
+```
+
+### Getting the rendered pages out
+
+`antas-natif` writes its output to `/tmp` **inside the container** — that directory is not your host's `/tmp`. To get the pages out you need to mount a host directory over `/tmp` before running:
+
+```bash
+docker run --rm \
+  -v /path/to/your/pdfs:/work \
+  -v /path/on/host/output:/tmp \
+  ghcr.io/ud20-dev/antas:latest \
+  file.pdf
+```
+
+After the container exits the rendered pages will be at `/path/on/host/output/{hash}/{when}/page_1.png`, etc.
+
+If you want to know the exact output path without guessing the hash, use `-f json` — antas will print the `out_dir` to stdout before the container exits:
+
+```bash
+OUT=$(docker run --rm \
+  -v /path/to/your/pdfs:/work \
+  -v /path/on/host/output:/tmp \
+  ghcr.io/ud20-dev/antas:latest \
+  file.pdf -f json)
+
+echo "$OUT"
+# {"ok":true,"out_dir":"/tmp/096c84.../{when}","page_count":3}
+
+OUT_DIR=$(echo "$OUT" | grep -o '"out_dir":"[^"]*"' | cut -d'"' -f4)
+echo "Pages are at: $OUT_DIR"
+```
+
+### Available tags
+
+| tag | meaning |
+|-----|---------|
+| `latest` | most recent release |
+| `1.0`, `1.0.0` | specific version |

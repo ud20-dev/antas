@@ -41,16 +41,24 @@ func TestDispatch_VersionFlag_ExitSuccess(t *testing.T) {
 }
 
 func TestDispatch_UnknownFormat_ExitBadCLIUsage(t *testing.T) {
-	code, _ := Dispatch(RunContext{Format: "xml"})
+	// Needs exactly 1 arg so the arg-count check passes and the format check is reached.
+	code, _ := Dispatch(RunContext{Format: "xml", Args: []string{"any.pdf"}})
 	if code != ExitBadCLIUsage {
 		t.Errorf("expected exit %d, got %d", ExitBadCLIUsage, code)
 	}
 }
 
-func TestDispatch_NoArgs_ExitGenericFailure(t *testing.T) {
+func TestDispatch_NoArgs_ExitBadCLIUsage(t *testing.T) {
 	code, _ := Dispatch(RunContext{Format: "human"})
-	if code != ExitGenericFailure {
-		t.Errorf("expected exit %d, got %d", ExitGenericFailure, code)
+	if code != ExitBadCLIUsage {
+		t.Errorf("expected exit %d, got %d", ExitBadCLIUsage, code)
+	}
+}
+
+func TestDispatch_TooManyArgs_ExitBadCLIUsage(t *testing.T) {
+	code, _ := Dispatch(RunContext{Format: "human", Args: []string{"a.pdf", "b.pdf"}})
+	if code != ExitBadCLIUsage {
+		t.Errorf("expected exit %d, got %d", ExitBadCLIUsage, code)
 	}
 }
 
@@ -62,17 +70,6 @@ func TestDispatch_FileNotFound_ExitGenericFailure(t *testing.T) {
 }
 
 // --- JSON format: stdout must always be valid JSON for exit 0 and 1 ---
-
-func TestDispatch_JSONFormat_NoArgs_JSONStdout(t *testing.T) {
-	var code int
-	out := captureStdout(func() {
-		code, _ = Dispatch(RunContext{Format: "json"})
-	})
-	if code != ExitGenericFailure {
-		t.Errorf("expected exit %d, got %d", ExitGenericFailure, code)
-	}
-	assertJSONError(t, out)
-}
 
 func TestDispatch_JSONFormat_FileNotFound_JSONStdout(t *testing.T) {
 	var code int
@@ -110,9 +107,10 @@ func TestDispatch_JSONFormat_ValidPDF_JSONStdout(t *testing.T) {
 // by main() after Dispatch returns, not by Dispatch itself.
 func TestDispatch_Exit2_NeverJSON(t *testing.T) {
 	cases := []RunContext{
-		{Format: "xml"},
-		{Format: "xml", Args: []string{"any.pdf"}},
-		{Format: ""},
+		{Format: "human"},                             // no args
+		{Format: "human", Args: []string{"a", "b"}},  // too many args
+		{Format: "xml", Args: []string{"any.pdf"}},   // unknown format
+		{Format: ""},                                  // empty format
 	}
 	for _, ctx := range cases {
 		var code int

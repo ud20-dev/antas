@@ -1,6 +1,11 @@
+.git
+.github
+.claude
 bencher
 antas*
 benchmark*
 tests_samples
 compile.sh
 README.md
+CHANGELOG.md
+*_test.go

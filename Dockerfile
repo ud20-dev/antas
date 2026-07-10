@@ -36,6 +36,10 @@ RUN curl -fsSL -o pdfium.tgz \
 #############################################
 FROM golang:${GO_VERSION}-bookworm AS builder
 
+ARG VERSION=dev
+ARG BUILD_TIME=local
+ARG COMMIT_HASH=dirty
+
 # gcc/build-essential for cgo, pkg-config so go-pdfium's cgo build finds
 # PDFium, libturbojpeg-dev for the pdfium_use_turbojpeg build tag.
 RUN apt-get update \
@@ -63,7 +67,13 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -tags="natif pdfium_use_turbojpeg" -o /out/antas-natif .
+RUN go build \
+		-tags="natif pdfium_use_turbojpeg" \
+		-ldflags="-s -w \
+			-X github.com/ud20-dev/antas/internal/data.Version=${VERSION} \
+			-X github.com/ud20-dev/antas/internal/data.BuildTime=${BUILD_TIME} \
+			-X github.com/ud20-dev/antas/internal/data.CommitHash=${COMMIT_HASH}" \
+		-o /out/antas-natif .
 
 #############################################
 # Stage 3: minimal runtime image

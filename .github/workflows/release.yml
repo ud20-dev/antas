@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Set build info
+        id: info
+        run: |
+          echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          echo "commit=${GITHUB_SHA::8}"       >> "$GITHUB_OUTPUT"
+          echo "build_time=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+
+      - name: Extract release notes from CHANGELOG
+        run: |
+          awk '/^## /{count++; if(count==2) exit; next} count==1' CHANGELOG.md \
+            > /tmp/release_notes.md
+
+      - name: Build binaries
+        run: |
+          LDFLAGS="-s -w \
+            -X github.com/ud20-dev/antas/internal/data.Version=${{ steps.info.outputs.version }} \
+            -X github.com/ud20-dev/antas/internal/data.BuildTime=${{ steps.info.outputs.build_time }} \
+            -X github.com/ud20-dev/antas/internal/data.CommitHash=${{ steps.info.outputs.commit }}"
+
+          mkdir -p dist
+
+          for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64; do
+            GOOS="${target%/*}"
+            GOARCH="${target#*/}"
+            EXT=""
+            [ "$GOOS" = "windows" ] && EXT=".exe"
+            GOOS=$GOOS GOARCH=$GOARCH go build \
+              -ldflags="$LDFLAGS" \
+              -o "dist/antas-${GOOS}-${GOARCH}${EXT}" \
+              .
+            echo "built dist/antas-${GOOS}-${GOARCH}${EXT}"
+          done
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: /tmp/release_notes.md
+          files: dist/*

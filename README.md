@@ -119,6 +119,6 @@ i wouldn't recommend using it unless your the benchmark on your machine says oth
 ### Sandboxing
 
 in most cases you'll probably want to use antas-natif, if it runs in a dedicated server
-the docker file will provide a simple built docker image 
+the docker file will provide a simple way to built a docker image 
 
 you can then sandbox antas-natif with control of the system.

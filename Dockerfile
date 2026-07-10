@@ -10,7 +10,7 @@
 # Override versions if needed:
 #   docker build --build-arg PDFIUM_VERSION=chromium%2F7934 --build-arg GO_VERSION=1.23 -t antas-natif .
 
-ARG GO_VERSION=1.23
+ARG GO_VERSION=1.25
 ARG PDFIUM_VERSION=chromium%2F7934
 ARG PDFIUM_ARCHIVE=pdfium-linux-x64.tgz
 

@@ -5,6 +5,7 @@ go 1.25.5
 require (
 	charm.land/lipgloss/v2 v2.0.5
 	github.com/klippa-app/go-pdfium v1.19.4
+	github.com/spf13/pflag v1.0.10
 )
 
 require (

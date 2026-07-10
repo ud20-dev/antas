@@ -6,6 +6,13 @@ This project adheres to [Semantic Versioning](https://semver.org) and the format
 
 ---
 
+## [1.0.1] - 2026-07-10
+
+### Fixed
+
+- fixed a bug where antas would print args on invalid usage.
+- fixed the exit code returned when a file path isn't passed. (`GenericError` -> `BadCLIUsage`)
+
 ## [1.0.0] - 2026-07-10
 
 ### Added

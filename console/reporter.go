@@ -12,7 +12,7 @@ var REPORTERS = map[string]Reporter{
 func GetReporter(reporter_id string) (Reporter, error) {
 	reporter, ok := REPORTERS[reporter_id]
 	if !ok{
-		return  nil, fmt.Errorf("Unknown reporter: %q", reporter_id)
+		return nil, fmt.Errorf("unknown reporter: %q", reporter_id)
 	}
 	return reporter, nil
 }

@@ -19,7 +19,7 @@ func TestMain(m *testing.M) {
 		panic("renderer.Init: " + err.Error())
 	}
 	code := m.Run()
-	renderer.Close()
+	_ = renderer.Close()
 	os.Exit(code)
 }
 

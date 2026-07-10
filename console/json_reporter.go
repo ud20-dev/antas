@@ -14,7 +14,7 @@ func (JsonReporter) Done(outDir string, pageCount int) {
 		OutDir:    outDir,
 		PageCount: pageCount,
 	}
-	json.NewEncoder(os.Stdout).Encode(result)
+	_ = json.NewEncoder(os.Stdout).Encode(result)
 }
 
 func (JsonReporter) Error(err error) {
@@ -22,5 +22,5 @@ func (JsonReporter) Error(err error) {
 		OK:    false,
 		Error: err.Error(),
 	}
-	json.NewEncoder(os.Stdout).Encode(result)
+	_ = json.NewEncoder(os.Stdout).Encode(result)
 }

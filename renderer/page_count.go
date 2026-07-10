@@ -22,9 +22,11 @@ func GetPageCount(filePath string) (int, error) {
 	}
 
 	// Always close the document, this will release its resources.
-	defer instance.FPDF_CloseDocument(&requests.FPDF_CloseDocument{
-		Document: doc.Document,
-	})
+	defer func() {
+		_, _ = instance.FPDF_CloseDocument(&requests.FPDF_CloseDocument{
+			Document: doc.Document,
+		})
+	}()
 
 	pageCount, err := instance.FPDF_GetPageCount(&requests.FPDF_GetPageCount{
 		Document: doc.Document,

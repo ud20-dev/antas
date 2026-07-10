@@ -13,17 +13,17 @@ import (
 
 func CanonicalRun(Args []string, reporter console.Reporter) error {
 	if len(Args) != 1 {
-		return fmt.Errorf("Usage: antas <path/to/file.pdf>, %v", Args)
+		return fmt.Errorf("usage: antas <path/to/file.pdf>, %v", Args)
 	}
 	inputFile := Args[0]
 	if _, err := os.Stat(inputFile); os.IsNotExist(err) {
-		return fmt.Errorf("File does not exist: %s", inputFile)
+		return fmt.Errorf("file does not exist: %s", inputFile)
 	}
-	
+
 	if err := renderer.Init(); err != nil{
 		return err
 	}
-	defer renderer.Close()
+	defer func() { _ = renderer.Close() }()
 	outputDir, err := pdf.GetPDFOutputPath(Args[0])
 	if err != nil {
 		return fmt.Errorf("Error getting PDF output path: %v", err)

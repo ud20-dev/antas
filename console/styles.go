@@ -17,5 +17,5 @@ var SuccessStyle = BaseStyle.Foreground(lipgloss.Green)
 func PrintWithStyle(style lipgloss.Style, format string, v ...any) {
 	formatted_string := fmt.Sprintf(format, v...)
 	render_result := style.Render(formatted_string)
-	lipgloss.Println(render_result)
+	_, _ = lipgloss.Println(render_result)
 }

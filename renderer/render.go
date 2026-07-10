@@ -27,9 +27,11 @@ func RenderPage(filePath string, page int, output string) error {
 	}
 
 	// Always close the document, this will release its resources.
-	defer instance.FPDF_CloseDocument(&requests.FPDF_CloseDocument{
-		Document: doc.Document,
-	})
+	defer func() {
+		_, _ = instance.FPDF_CloseDocument(&requests.FPDF_CloseDocument{
+			Document: doc.Document,
+		})
+	}()
 
 	// Render the page in DPI DPI.
 	pageRender, err := instance.RenderPageInDPI(&requests.RenderPageInDPI{
@@ -55,12 +57,11 @@ func RenderPage(filePath string, page int, output string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
 
-	err = png.Encode(f, pageRender.Result.Image)
-	if err != nil {
+	if err = png.Encode(f, pageRender.Result.Image); err != nil {
+		_ = f.Close()
 		return err
 	}
 
-	return nil
+	return f.Close()
 }

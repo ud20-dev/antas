@@ -48,6 +48,8 @@ func GetPDFOutputPath(pdfPath string) (string, error) {
 		hex.EncodeToString(hash[:]),
 		when,
 	)
-	os.MkdirAll(outputPath, os.ModePerm)
+	if err := os.MkdirAll(outputPath, os.ModePerm); err != nil {
+		return "", err
+	}
 	return outputPath, nil
 }

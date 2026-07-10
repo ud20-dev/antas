@@ -13,7 +13,7 @@ import (
 
 func CanonicalRun(Args []string, reporter console.Reporter) error {
 	if len(Args) != 1 {
-		return fmt.Errorf("usage: antas <path/to/file.pdf>, %v", Args)
+		return fmt.Errorf("usage: antas <path/to/file.pdf>")
 	}
 	inputFile := Args[0]
 	if _, err := os.Stat(inputFile); os.IsNotExist(err) {
